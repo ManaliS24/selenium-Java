@@ -26,7 +26,6 @@
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <allure-maven.version>2.15.0</allure-maven.version>
-        <suiteXmlFile></suiteXmlFile>
     </properties>
 
     <dependencyManagement>
@@ -132,9 +131,6 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <groups>${groups}</groups>
-                    <suiteXmlFiles combine.self="override">
-                        <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
-                    </suiteXmlFiles>
                     <systemPropertyVariables>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
@@ -153,4 +149,28 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>testng-suite</id>
+            <activation>
+                <property>
+                    <name>suiteXmlFile</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+                            </suiteXmlFiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
