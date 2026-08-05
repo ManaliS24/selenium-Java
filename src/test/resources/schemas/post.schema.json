@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/post.schema.json",
+  "title": "JSONPlaceholder post",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["userId", "id", "title", "body"],
+  "properties": {
+    "userId": {"type": "integer", "minimum": 1},
+    "id": {"type": "integer", "minimum": 1},
+    "title": {"type": "string", "minLength": 1},
+    "body": {"type": "string", "minLength": 1}
+  }
+}
