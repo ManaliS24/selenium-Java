@@ -1,0 +1,12 @@
+.idea/
+.vscode/
+*.iml
+.env
+.m2/
+target/
+artifacts/
+allure-report/
+*.log
+*.class
+.DS_Store
+Thumbs.db
