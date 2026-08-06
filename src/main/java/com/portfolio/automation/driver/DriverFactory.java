@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.Map;
 
 /** Creates WebDriver instances while Selenium Manager resolves the required driver binary. */
 public final class DriverFactory {
@@ -21,15 +22,27 @@ public final class DriverFactory {
     }
 
     public static WebDriver create(String browserName) {
+        return create(
+                browserName,
+                positiveSetting("WINDOW_WIDTH"),
+                positiveSetting("WINDOW_HEIGHT"),
+                false);
+    }
+
+    public static WebDriver create(String browserName, int width, int height) {
+        return create(browserName, width, height, false);
+    }
+
+    public static WebDriver create(String browserName, int width, int height, boolean emulateViewport) {
         BrowserType browser = BrowserType.from(browserName);
         boolean headless = Configuration.getBoolean("HEADLESS");
-        int width = positiveSetting("WINDOW_WIDTH");
-        int height = positiveSetting("WINDOW_HEIGHT");
+        requirePositive("window width", width);
+        requirePositive("window height", height);
 
         LOGGER.info("Creating {} WebDriver (headless={}, window={}x{})", browser, headless, width, height);
         WebDriver driver = switch (browser) {
-            case CHROME -> new ChromeDriver(chromeOptions(headless, width, height));
-            case EDGE -> new EdgeDriver(edgeOptions(headless, width, height));
+            case CHROME -> new ChromeDriver(chromeOptions(headless, width, height, emulateViewport));
+            case EDGE -> new EdgeDriver(edgeOptions(headless, width, height, emulateViewport));
         };
 
         configure(driver);
@@ -39,7 +52,8 @@ public final class DriverFactory {
         return driver;
     }
 
-    private static ChromeOptions chromeOptions(boolean headless, int width, int height) {
+    private static ChromeOptions chromeOptions(
+            boolean headless, int width, int height, boolean emulateViewport) {
         ChromeOptions options = new ChromeOptions();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         options.addArguments("--window-size=" + width + "," + height, "--disable-dev-shm-usage");
@@ -49,10 +63,14 @@ public final class DriverFactory {
         if (isCi()) {
             options.addArguments("--no-sandbox");
         }
+        if (emulateViewport) {
+            options.setExperimentalOption("mobileEmulation", viewportEmulation(width, height));
+        }
         return options;
     }
 
-    private static EdgeOptions edgeOptions(boolean headless, int width, int height) {
+    private static EdgeOptions edgeOptions(
+            boolean headless, int width, int height, boolean emulateViewport) {
         EdgeOptions options = new EdgeOptions();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         options.addArguments("--window-size=" + width + "," + height, "--disable-dev-shm-usage");
@@ -62,7 +80,18 @@ public final class DriverFactory {
         if (isCi()) {
             options.addArguments("--no-sandbox");
         }
+        if (emulateViewport) {
+            options.setExperimentalOption("mobileEmulation", viewportEmulation(width, height));
+        }
         return options;
+    }
+
+    private static Map<String, Object> viewportEmulation(int width, int height) {
+        return Map.of("deviceMetrics", Map.of(
+                "width", width,
+                "height", height,
+                "pixelRatio", 1.0,
+                "mobile", width < 600));
     }
 
     private static void configure(WebDriver driver) {
@@ -75,10 +104,14 @@ public final class DriverFactory {
 
     private static int positiveSetting(String key) {
         int value = Configuration.getInt(key);
-        if (value <= 0) {
-            throw new IllegalArgumentException(key + " must be greater than zero, but was: " + value);
-        }
+        requirePositive(key, value);
         return value;
+    }
+
+    private static void requirePositive(String name, int value) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(name + " must be greater than zero, but was: " + value);
+        }
     }
 
     private static boolean isCi() {

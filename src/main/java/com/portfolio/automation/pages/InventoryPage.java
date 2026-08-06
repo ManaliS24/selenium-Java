@@ -5,6 +5,8 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.Map;
+
 public final class InventoryPage extends BasePage {
     private static final By PAGE_TITLE = By.cssSelector("[data-test='title']");
     private static final By INVENTORY_ITEMS = By.cssSelector("[data-test='inventory-item']");
@@ -53,10 +55,30 @@ public final class InventoryPage extends BasePage {
         return new CartPage(driver).waitUntilLoaded();
     }
 
+    @SuppressWarnings("unchecked")
+    public LayoutMetrics layoutMetrics() {
+        Map<String, Number> measurements = (Map<String, Number>) executeScript("""
+                return {
+                    clientWidth: document.documentElement.clientWidth,
+                    scrollWidth: document.documentElement.scrollWidth,
+                    innerWidth: window.innerWidth,
+                    innerHeight: window.innerHeight
+                };
+                """);
+        return new LayoutMetrics(
+                measurements.get("clientWidth").intValue(),
+                measurements.get("scrollWidth").intValue(),
+                measurements.get("innerWidth").intValue(),
+                measurements.get("innerHeight").intValue());
+    }
+
     private WebElement product(String productName) {
         return visibleElements(INVENTORY_ITEMS).stream()
                 .filter(item -> productName.equals(item.findElement(ITEM_NAME).getText()))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Inventory product not found: " + productName));
+    }
+
+    public record LayoutMetrics(int clientWidth, int scrollWidth, int innerWidth, int innerHeight) {
     }
 }
