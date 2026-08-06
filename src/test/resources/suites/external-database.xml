@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="External database" parallel="none">
+    <test name="ClassicModels">
+        <groups><run><include name="external"/></run></groups>
+        <classes><class name="com.portfolio.automation.db.ClassicModelsDatabaseTest"/></classes>
+    </test>
+</suite>

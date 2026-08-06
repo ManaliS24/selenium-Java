@@ -28,7 +28,7 @@ public final class ClassicModelsDatabaseTest {
         }
     }
 
-    @Test(groups = {"external", "smoke"})
+    @Test(groups = "external")
     public void customer103IsAtelierGraphique() throws SQLException {
         ClassicModelsRepository.Customer customer = repository.findCustomer(103).orElseThrow();
 
@@ -36,7 +36,7 @@ public final class ClassicModelsDatabaseTest {
         Assert.assertEquals(customer.customerName(), "Atelier graphique");
     }
 
-    @Test(groups = {"external", "regression"})
+    @Test(groups = "external")
     public void firstTenCustomersMatchCsvBaseline() throws SQLException, IOException {
         List<ClassicModelsRepository.Customer> expected = loadExpectedCustomers();
 

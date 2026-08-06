@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Smoke" parallel="none">
+    <test name="Critical paths">
+        <groups>
+            <run><include name="smoke"/></run>
+        </groups>
+        <classes>
+            <class name="com.portfolio.automation.ui.LoginTest"/>
+            <class name="com.portfolio.automation.ui.CheckoutTest"/>
+            <class name="com.portfolio.automation.api.PostsApiTest"/>
+            <class name="com.portfolio.automation.db.SQLiteDatabaseTest"/>
+        </classes>
+    </test>
+</suite>

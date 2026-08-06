@@ -9,7 +9,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.ITestListener;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 
 import java.io.ByteArrayInputStream;
@@ -20,14 +21,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public final class TestListener implements ITestListener {
+public final class TestListener implements IInvokedMethodListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestListener.class);
     private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
     private static final Path SCREENSHOT_DIRECTORY = Path.of("artifacts", "screenshots");
 
     @Override
-    public void onTestFailure(ITestResult result) {
-        DriverManager.currentDriver().ifPresent(driver -> captureDiagnostics(result, driver));
+    public void afterInvocation(IInvokedMethod method, ITestResult result) {
+        if (method.isTestMethod() && !result.isSuccess()) {
+            DriverManager.currentDriver().ifPresent(driver -> captureDiagnostics(result, driver));
+        }
     }
 
     private void captureDiagnostics(ITestResult result, WebDriver driver) {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Regression" parallel="classes" thread-count="4" data-provider-thread-count="2">
+    <test name="Local regression">
+        <groups>
+            <run><include name="regression"/></run>
+        </groups>
+        <classes>
+            <class name="com.portfolio.automation.ui.LoginTest"/>
+            <class name="com.portfolio.automation.ui.CheckoutTest"/>
+            <class name="com.portfolio.automation.responsive.ResponsiveInventoryTest"/>
+            <class name="com.portfolio.automation.accessibility.LoginAccessibilityTest"/>
+            <class name="com.portfolio.automation.api.PostsApiTest"/>
+            <class name="com.portfolio.automation.db.SQLiteDatabaseTest"/>
+        </classes>
+    </test>
+</suite>

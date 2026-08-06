@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Local database" parallel="none">
+    <test name="SQLite">
+        <groups><run><include name="db"/></run></groups>
+        <classes><class name="com.portfolio.automation.db.SQLiteDatabaseTest"/></classes>
+    </test>
+</suite>
