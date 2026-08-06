@@ -80,7 +80,6 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>${mariadb-java-client.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.deque.html.axe-core</groupId>
