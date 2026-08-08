@@ -31,7 +31,9 @@ public final class CheckoutPage extends BasePage {
     }
 
     public CheckoutPage continueCheckout() {
-        click(CONTINUE_BUTTON);
+        clickUntil(CONTINUE_BUTTON, webDriver ->
+                webDriver.getCurrentUrl().contains("/checkout-step-two.html")
+                        || webDriver.findElements(ERROR_MESSAGE).stream().anyMatch(element -> element.isDisplayed()));
         return this;
     }
 
@@ -46,8 +48,8 @@ public final class CheckoutPage extends BasePage {
     }
 
     public CheckoutPage finish() {
-        click(FINISH_BUTTON);
-        waitForUrlContaining("/checkout-complete.html");
+        clickUntil(FINISH_BUTTON,
+                webDriver -> webDriver.getCurrentUrl().contains("/checkout-complete.html"));
         return this;
     }
 

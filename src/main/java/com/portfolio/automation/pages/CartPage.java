@@ -24,7 +24,8 @@ public final class CartPage extends BasePage {
     }
 
     public CheckoutPage beginCheckout() {
-        click(CHECKOUT_BUTTON);
+        clickUntil(CHECKOUT_BUTTON,
+                webDriver -> webDriver.getCurrentUrl().contains("/checkout-step-one.html"));
         return new CheckoutPage(driver).waitForInformationStep();
     }
 }

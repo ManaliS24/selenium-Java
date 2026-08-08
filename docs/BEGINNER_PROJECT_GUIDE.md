@@ -79,8 +79,8 @@ public final class ExamplePage extends BasePage {
 ```
 
 Prefer `data-test`, then ID/name, accessible attributes, stable CSS, and only use XPath
-when no clearer stable selector exists. Never add `Thread.sleep`; add an explicit wait
-for the state the user actually needs.
+when no clearer stable selector exists. Never add fixed delays; add an explicit wait for
+the state the user actually needs.
 
 ## 6. Add a UI test
 

@@ -47,10 +47,59 @@ public abstract class BasePage {
         clickable(locator).click();
     }
 
+    protected void clickUntil(By locator, Predicate<WebDriver> expectedState) {
+        boolean[] nativeClickAttempted = {false};
+        wait.until(webDriver -> {
+            if (expectedState.test(webDriver)) {
+                return true;
+            }
+            WebElement element = clickable(locator);
+            if (nativeClickAttempted[0]) {
+                executeScript("arguments[0].click();", element);
+            } else {
+                element.click();
+                nativeClickAttempted[0] = true;
+            }
+            return expectedState.test(webDriver);
+        });
+    }
+
+    protected void clickUntil(WebElement element, Predicate<WebDriver> expectedState) {
+        boolean[] nativeClickAttempted = {false};
+        wait.until(webDriver -> {
+            if (expectedState.test(webDriver)) {
+                return true;
+            }
+            if (nativeClickAttempted[0]) {
+                executeScript("arguments[0].click();", element);
+            } else {
+                element.click();
+                nativeClickAttempted[0] = true;
+            }
+            return expectedState.test(webDriver);
+        });
+    }
+
     protected void type(By locator, String value) {
         WebElement element = visible(locator);
+        String expectedValue = value == null ? "" : value;
         element.clear();
-        element.sendKeys(value == null ? "" : value);
+        element.sendKeys(expectedValue);
+        wait.until(webDriver -> {
+            if (expectedValue.equals(element.getAttribute("value"))) {
+                return true;
+            }
+            executeScript("""
+                    const input = arguments[0];
+                    const value = arguments[1];
+                    const setter = Object.getOwnPropertyDescriptor(
+                        window.HTMLInputElement.prototype, 'value').set;
+                    setter.call(input, value);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    """, element, expectedValue);
+            return expectedValue.equals(element.getAttribute("value"));
+        });
     }
 
     protected String text(By locator) {

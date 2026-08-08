@@ -38,7 +38,8 @@ public final class InventoryPage extends BasePage {
     }
 
     public InventoryPage addProduct(String productName) {
-        product(productName).findElement(ADD_TO_CART).click();
+        WebElement addButton = product(productName).findElement(ADD_TO_CART);
+        clickUntil(addButton, webDriver -> isCartBadgeVisible());
         return this;
     }
 
@@ -51,8 +52,12 @@ public final class InventoryPage extends BasePage {
     }
 
     public CartPage openCart() {
-        click(CART_LINK);
+        clickUntil(CART_LINK, webDriver -> webDriver.getCurrentUrl().contains("/cart.html"));
         return new CartPage(driver).waitUntilLoaded();
+    }
+
+    private boolean isCartBadgeVisible() {
+        return driver.findElements(CART_BADGE).stream().anyMatch(WebElement::isDisplayed);
     }
 
     @SuppressWarnings("unchecked")
